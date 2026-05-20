@@ -185,21 +185,6 @@ export default function MerciPage() {
                         </div>
                     </motion.div>
 
-                    {/* Estimated Delivery */}
-                    <motion.div
-                        className="bg-neutral-50 rounded-2xl p-6 mb-10 text-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 }}
-                    >
-                        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-400 mb-2">
-                            Délai estimé
-                        </p>
-                        <p className="text-lg font-bold">
-                            Préparation : 24-48h · Livraison : 3-5 jours ouvrés
-                        </p>
-                    </motion.div>
-
                     {/* CTA Buttons */}
                     <motion.div
                         className="flex flex-col sm:flex-row gap-4 justify-center"
