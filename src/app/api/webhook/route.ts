@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2023-10-16' as any,
 })
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY || '')
 
 // Your email where you want to receive order notifications
 const OWNER_EMAIL = process.env.OWNER_EMAIL || 'votre-email@gmail.com'
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
             `
 
             // Send the email
-            await resend.emails.send({
+            await getResend().emails.send({
                 from: FROM_EMAIL,
                 to: OWNER_EMAIL,
                 subject: `🛒 Nouvelle commande LÉSION — ${amountTotal} € — ${customerName}`,
