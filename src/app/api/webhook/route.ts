@@ -172,13 +172,152 @@ export async function POST(request: NextRequest) {
             </html>
             `
 
-            // Send the email
+            // Send the email to owner
             await getResend().emails.send({
                 from: FROM_EMAIL,
                 to: OWNER_EMAIL,
                 subject: `🛒 Nouvelle commande LÉSION — ${amountTotal} € — ${customerName}`,
                 html: emailHtml,
             })
+
+            // Send confirmation email to customer
+            if (customerEmail && customerEmail !== 'Non renseigné') {
+                const customerEmailHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; color: #1a1a1a; }
+                        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; margin-top: 20px; margin-bottom: 20px; }
+                        .header { background: #000; color: white; padding: 40px 30px; text-align: center; }
+                        .header h1 { margin: 0; font-size: 28px; letter-spacing: 4px; font-weight: 700; }
+                        .header p { margin: 12px 0 0; opacity: 0.8; font-size: 15px; }
+                        .content { padding: 30px; }
+                        .greeting { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+                        .intro { color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 30px; }
+                        .tracker { background: #fafafa; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+                        .tracker-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 20px; font-weight: 600; }
+                        .steps { display: flex; justify-content: space-between; position: relative; }
+                        .step { text-align: center; flex: 1; position: relative; }
+                        .step-icon { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+                        .step-active .step-icon { background: #000; color: white; }
+                        .step-pending .step-icon { background: #e5e5e5; color: #999; }
+                        .step-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+                        .step-active .step-name { color: #000; }
+                        .step-pending .step-name { color: #999; }
+                        .progress-bar { height: 3px; background: #e5e5e5; margin: 0 40px; position: relative; top: -42px; z-index: 0; border-radius: 2px; }
+                        .progress-fill { height: 100%; width: 15%; background: #000; border-radius: 2px; }
+                        .order-summary { margin-bottom: 24px; }
+                        .summary-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 12px; font-weight: 600; }
+                        .product-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+                        .product-name { font-weight: 500; }
+                        .product-details { color: #666; font-size: 13px; }
+                        .total-line { display: flex; justify-content: space-between; padding: 16px 0 0; font-size: 18px; font-weight: 700; }
+                        .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+                        .info-box p { margin: 0; color: #166534; font-size: 14px; line-height: 1.5; }
+                        .footer { text-align: center; padding: 24px 30px; border-top: 1px solid #f0f0f0; }
+                        .footer p { margin: 0; color: #999; font-size: 12px; }
+                        .footer a { color: #000; text-decoration: none; font-weight: 500; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>LÉSION</h1>
+                            <p>Confirmation de commande</p>
+                        </div>
+                        <div class="content">
+                            <p class="greeting">Bonjour ${customerName} 👋</p>
+                            <p class="intro">
+                                Merci pour votre commande ! Votre paiement a été confirmé avec succès. 
+                                Votre commande est maintenant en cours de préparation.
+                            </p>
+
+                            <!-- Order Tracking -->
+                            <div class="tracker">
+                                <div class="tracker-title">Suivi de votre commande</div>
+                                <div class="steps">
+                                    <div class="step step-active">
+                                        <div class="step-icon">✓</div>
+                                        <div class="step-name">Confirmée</div>
+                                    </div>
+                                    <div class="step step-active">
+                                        <div class="step-icon">📦</div>
+                                        <div class="step-name">En préparation</div>
+                                    </div>
+                                    <div class="step step-pending">
+                                        <div class="step-icon">🚚</div>
+                                        <div class="step-name">Expédiée</div>
+                                    </div>
+                                    <div class="step step-pending">
+                                        <div class="step-icon">🏠</div>
+                                        <div class="step-name">Livrée</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill"></div></div>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="info-box">
+                                <p>📬 <strong>Vous recevrez un email avec le numéro de suivi de votre colis dès qu'il sera expédié.</strong> La préparation prend généralement 24 à 48h ouvrées.</p>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="order-summary">
+                                <div class="summary-title">Récapitulatif</div>
+                                ${lineItems.filter((item: any) => {
+                                    const product = item.price?.product
+                                    const name = product?.name || item.description || ''
+                                    return name !== 'Frais de port'
+                                }).map((item: any) => {
+                                    const product = item.price?.product
+                                    const name = product?.name || item.description || 'Produit'
+                                    const desc = product?.description || ''
+                                    const qty = item.quantity || 1
+                                    const total = ((item.amount_total || 0) / 100).toFixed(2)
+                                    return `<div class="product-item">
+                                        <div>
+                                            <div class="product-name">${name}</div>
+                                            <div class="product-details">${desc ? desc + ' · ' : ''}Qté: ${qty}</div>
+                                        </div>
+                                        <div class="product-name">${total} €</div>
+                                    </div>`
+                                }).join('')}
+                                <div class="product-item">
+                                    <div class="product-details">Frais de port</div>
+                                    <div class="product-details">3,90 €</div>
+                                </div>
+                                <div class="total-line">
+                                    <span>Total</span>
+                                    <span>${amountTotal} €</span>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div class="order-summary">
+                                <div class="summary-title">Adresse de livraison</div>
+                                <p style="margin: 0; line-height: 1.6;">${addressFormatted}</p>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Une question ? Contactez-nous à <a href="mailto:lesion.officelfr@gmail.com">lesion.officelfr@gmail.com</a></p>
+                            <p style="margin-top: 8px;">LÉSION — Ce qui se brise peut renaître autrement</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                `
+
+                await getResend().emails.send({
+                    from: FROM_EMAIL,
+                    to: customerEmail,
+                    subject: `✅ Commande confirmée — LÉSION`,
+                    html: customerEmailHtml,
+                })
+
+                console.log(`✅ Customer confirmation email sent to ${customerEmail}`)
+            }
 
             console.log(`✅ Order notification email sent for session ${session.id}`)
 

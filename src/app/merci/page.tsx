@@ -7,9 +7,17 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useCart } from '@/context/CartContext'
 
+const trackingSteps = [
+    { icon: '✓', label: 'Confirmée', desc: 'Paiement reçu', active: true },
+    { icon: '📦', label: 'En préparation', desc: 'Sous 24-48h', active: true },
+    { icon: '🚚', label: 'Expédiée', desc: 'Suivi par email', active: false },
+    { icon: '🏠', label: 'Livrée', desc: 'Chez vous', active: false },
+]
+
 export default function MerciPage() {
     const { clearCart } = useCart()
     const [cleared, setCleared] = useState(false)
+    const [truckPosition, setTruckPosition] = useState(0)
 
     // Clear the cart after successful payment
     useEffect(() => {
@@ -19,22 +27,33 @@ export default function MerciPage() {
         }
     }, [cleared, clearCart])
 
+    // Animate truck
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTruckPosition(prev => {
+                if (prev >= 35) return 35
+                return prev + 0.5
+            })
+        }, 50)
+        return () => clearInterval(interval)
+    }, [])
+
     return (
         <>
             <Header />
 
-            <main className="pt-20 min-h-screen bg-white flex items-center justify-center">
-                <div className="max-w-2xl mx-auto px-6 py-20 text-center">
+            <main className="pt-20 min-h-screen bg-white">
+                <div className="max-w-3xl mx-auto px-6 py-16">
 
                     {/* Success Icon */}
                     <motion.div
-                        className="w-24 h-24 mx-auto mb-8 bg-green-50 rounded-full flex items-center justify-center"
+                        className="w-20 h-20 mx-auto mb-6 bg-green-50 rounded-full flex items-center justify-center"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
                     >
                         <motion.svg
-                            className="w-12 h-12 text-green-500"
+                            className="w-10 h-10 text-green-500"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -53,7 +72,7 @@ export default function MerciPage() {
 
                     {/* Title */}
                     <motion.h1
-                        className="text-4xl lg:text-5xl font-bold mb-4 tracking-tight"
+                        className="text-3xl lg:text-4xl font-bold mb-3 tracking-tight text-center"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
@@ -61,67 +80,124 @@ export default function MerciPage() {
                         Merci pour votre commande !
                     </motion.h1>
 
-                    {/* Subtitle */}
                     <motion.p
-                        className="text-xl text-neutral-600 mb-4 leading-relaxed"
+                        className="text-neutral-500 mb-10 text-center max-w-md mx-auto"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
                     >
-                        Votre paiement a été confirmé avec succès.
+                        Votre paiement a été confirmé. Un email de confirmation vous a été envoyé.
                     </motion.p>
 
-                    <motion.p
-                        className="text-neutral-500 mb-10 leading-relaxed"
-                        initial={{ opacity: 0, y: 20 }}
+                    {/* === TRACKING TIMELINE === */}
+                    <motion.div
+                        className="bg-neutral-50 rounded-3xl p-8 lg:p-10 mb-8"
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
                     >
-                        Vous recevrez un email de confirmation avec les détails de votre commande et le suivi de livraison. Votre commande sera préparée et expédiée dans les plus brefs délais.
-                    </motion.p>
+                        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-8 text-center">
+                            Suivi de votre commande
+                        </h2>
 
-                    {/* Divider */}
-                    <motion.div
-                        className="w-16 h-px bg-neutral-200 mx-auto mb-10"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ delay: 0.6 }}
-                    />
+                        {/* Steps */}
+                        <div className="relative">
+                            {/* Progress bar background */}
+                            <div className="absolute top-6 left-[12%] right-[12%] h-[3px] bg-neutral-200 rounded-full" />
+                            
+                            {/* Progress bar filled */}
+                            <motion.div
+                                className="absolute top-6 left-[12%] h-[3px] bg-black rounded-full"
+                                initial={{ width: '0%' }}
+                                animate={{ width: '28%' }}
+                                transition={{ delay: 0.8, duration: 1.2, ease: 'easeOut' }}
+                            />
 
-                    {/* Order Info Cards */}
+                            {/* Animated truck on the progress bar */}
+                            <motion.div
+                                className="absolute top-[14px] text-xl z-10"
+                                initial={{ left: '12%', opacity: 0 }}
+                                animate={{ left: `${12 + truckPosition}%`, opacity: 1 }}
+                                transition={{ opacity: { delay: 0.8, duration: 0.3 } }}
+                            >
+                                🚛
+                            </motion.div>
+
+                            <div className="relative flex justify-between">
+                                {trackingSteps.map((step, i) => (
+                                    <motion.div
+                                        key={i}
+                                        className="flex flex-col items-center text-center flex-1"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.6 + i * 0.15 }}
+                                    >
+                                        <div
+                                            className={`w-12 h-12 rounded-full flex items-center justify-center text-lg mb-3 relative z-10 
+                                                ${step.active 
+                                                    ? 'bg-black text-white shadow-lg shadow-black/20' 
+                                                    : 'bg-neutral-200 text-neutral-400'
+                                                }`}
+                                        >
+                                            {step.icon}
+                                        </div>
+                                        <p className={`text-xs font-semibold uppercase tracking-wide mb-1 
+                                            ${step.active ? 'text-black' : 'text-neutral-400'}`}>
+                                            {step.label}
+                                        </p>
+                                        <p className={`text-[11px] ${step.active ? 'text-neutral-500' : 'text-neutral-300'}`}>
+                                            {step.desc}
+                                        </p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Info Cards */}
                     <motion.div
-                        className="grid sm:grid-cols-3 gap-4 mb-12"
+                        className="grid sm:grid-cols-2 gap-4 mb-8"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
+                        transition={{ delay: 0.7 }}
                     >
-                        <div className="bg-neutral-50 rounded-2xl p-6">
-                            <div className="w-10 h-10 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                <svg className="w-5 h-5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
+                        <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl">📬</span>
+                                <div>
+                                    <h3 className="font-semibold text-sm mb-1 text-green-900">Email de confirmation envoyé</h3>
+                                    <p className="text-xs text-green-700 leading-relaxed">
+                                        Vérifiez votre boîte mail (et les spams). Vous avez reçu le récapitulatif de votre commande.
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm font-medium mb-1">Confirmation</p>
-                            <p className="text-xs text-neutral-500">Par email dans quelques minutes</p>
                         </div>
-                        <div className="bg-neutral-50 rounded-2xl p-6">
-                            <div className="w-10 h-10 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                <svg className="w-5 h-5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                </svg>
+                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl">📦</span>
+                                <div>
+                                    <h3 className="font-semibold text-sm mb-1 text-blue-900">Suivi du colis</h3>
+                                    <p className="text-xs text-blue-700 leading-relaxed">
+                                        Vous recevrez un email avec le numéro de suivi dès que votre colis sera expédié.
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm font-medium mb-1">Préparation</p>
-                            <p className="text-xs text-neutral-500">Sous 24 à 48h ouvrées</p>
                         </div>
-                        <div className="bg-neutral-50 rounded-2xl p-6">
-                            <div className="w-10 h-10 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                <svg className="w-5 h-5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                                </svg>
-                            </div>
-                            <p className="text-sm font-medium mb-1">Livraison</p>
-                            <p className="text-xs text-neutral-500">Gratuite en France</p>
-                        </div>
+                    </motion.div>
+
+                    {/* Estimated Delivery */}
+                    <motion.div
+                        className="bg-neutral-50 rounded-2xl p-6 mb-10 text-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8 }}
+                    >
+                        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-400 mb-2">
+                            Délai estimé
+                        </p>
+                        <p className="text-lg font-bold">
+                            Préparation : 24-48h · Livraison : 3-5 jours ouvrés
+                        </p>
                     </motion.div>
 
                     {/* CTA Buttons */}
@@ -129,17 +205,17 @@ export default function MerciPage() {
                         className="flex flex-col sm:flex-row gap-4 justify-center"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
+                        transition={{ delay: 0.9 }}
                     >
                         <Link
                             href="/vetements"
-                            className="px-8 py-4 bg-black text-white font-medium rounded-full hover:bg-neutral-800 transition-all hover:scale-105"
+                            className="px-8 py-4 bg-black text-white font-medium rounded-full hover:bg-neutral-800 transition-all hover:scale-105 text-center"
                         >
                             Continuer le shopping
                         </Link>
                         <Link
                             href="/"
-                            className="px-8 py-4 bg-transparent text-black font-medium rounded-full border-2 border-neutral-200 hover:border-black transition-all"
+                            className="px-8 py-4 bg-transparent text-black font-medium rounded-full border-2 border-neutral-200 hover:border-black transition-all text-center"
                         >
                             Retour à l'accueil
                         </Link>
@@ -147,10 +223,10 @@ export default function MerciPage() {
 
                     {/* Brand Touch */}
                     <motion.p
-                        className="mt-16 text-sm text-neutral-400 uppercase tracking-[0.3em]"
+                        className="mt-14 text-sm text-neutral-400 uppercase tracking-[0.3em] text-center"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 1 }}
+                        transition={{ delay: 1.2 }}
                     >
                         LÉSION — Merci de votre confiance
                     </motion.p>
