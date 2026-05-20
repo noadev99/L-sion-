@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
         // Create Stripe Checkout line items from cart items
-        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
+        const lineItems = items.map(
             (item: {
                 name: string
                 price: number

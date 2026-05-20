@@ -165,7 +165,7 @@ function TopButton() {
 // --- Eyelets ---
 function Eyelets() {
     const data = useMemo(() => {
-        const items = []
+        const items: { pos: [number, number, number]; rot: [number, number, number] }[] = []
         // Angle placements for 6 eyelets
         const angles = [-0.55, 0.55, -1.57, 1.57, -2.6, 2.6]
         const theta = Math.PI * 0.32

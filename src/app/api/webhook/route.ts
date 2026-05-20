@@ -38,9 +38,9 @@ export async function POST(request: NextRequest) {
 
         try {
             // Retrieve the full session with line items and customer details
-            const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+            const fullSession = (await stripe.checkout.sessions.retrieve(session.id, {
                 expand: ['line_items', 'line_items.data.price.product'],
-            })
+            })) as any
 
             const customerEmail = fullSession.customer_details?.email || 'Non renseigné'
             const customerName = fullSession.customer_details?.name || 'Non renseigné'
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
             const amountTotal = ((fullSession.amount_total || 0) / 100).toFixed(2)
 
             // Build the product list for the email
-            const productRows = lineItems.map((item) => {
+            const productRows = lineItems.map((item: any) => {
                 const product = item.price?.product as Stripe.Product
                 const productName = product?.name || item.description || 'Produit'
                 const productDesc = product?.description || ''
