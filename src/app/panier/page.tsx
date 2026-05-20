@@ -189,13 +189,13 @@ export default function PanierPage() {
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-neutral-600">Livraison</span>
-                                            <span className="font-medium text-green-600">Gratuite</span>
+                                            <span className="font-medium">3,90 €</span>
                                         </div>
                                     </div>
 
                                     <div className="flex justify-between py-6 border-b border-neutral-100">
                                         <span className="text-lg font-bold">Total</span>
-                                        <span className="text-lg font-bold">{totalPrice.toFixed(2)} €</span>
+                                        <span className="text-lg font-bold">{(totalPrice + 3.90).toFixed(2)} €</span>
                                     </div>
 
                                     {/* Promo Code */}

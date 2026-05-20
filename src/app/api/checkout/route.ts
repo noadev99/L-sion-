@@ -41,6 +41,18 @@ export async function POST(request: NextRequest) {
             })
         )
 
+        // Add shipping fee (3.90€)
+        lineItems.push({
+            price_data: {
+                currency: 'eur',
+                product_data: {
+                    name: 'Frais de port',
+                },
+                unit_amount: 390, // 3.90€ in cents
+            },
+            quantity: 1,
+        })
+
         // Create the Stripe Checkout session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
