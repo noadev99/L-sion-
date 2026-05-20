@@ -1,0 +1,455 @@
+/* ═══════════════════════════════════════════════════════════
+   LÉSION — Components
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────
+   HEADER / NAVIGATION
+   ───────────────────────────────────────────────────────── */
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-6) 0;
+    transition: background-color var(--duration-normal) var(--ease-out), padding var(--duration-normal) var(--ease-out);
+}
+
+.header.is-scrolled {
+    background-color: rgba(245, 243, 240, 0.95);
+    backdrop-filter: blur(10px);
+    padding: var(--space-4) 0;
+}
+
+.header.is-dark {
+    color: var(--blanc-casse);
+}
+
+.header.is-dark.is-scrolled {
+    color: var(--noir-profond);
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-light);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-10);
+}
+
+.nav-link {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    position: relative;
+    padding: var(--space-2) 0;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width var(--duration-normal) var(--ease-out);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Mobile Menu */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--space-2);
+}
+
+.menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background-color: currentColor;
+    transition: transform var(--duration-normal) var(--ease-out);
+}
+
+@media (max-width: 768px) {
+    .nav {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav.is-open {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-8);
+        background-color: var(--blanc-casse);
+        z-index: var(--z-overlay);
+    }
+
+    .nav.is-open .nav-link {
+        font-size: var(--text-2xl);
+    }
+}
+
+/* ─────────────────────────────────────────────────────────
+   BUTTONS
+   ───────────────────────────────────────────────────────── */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border: 1px solid currentColor;
+    transition: background-color var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: var(--noir-profond);
+    color: var(--blanc-casse);
+    border-color: var(--noir-profond);
+}
+
+.btn-primary:hover {
+    background-color: var(--noir-doux);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--noir-profond);
+}
+
+.btn-outline:hover {
+    background-color: var(--noir-profond);
+    color: var(--blanc-casse);
+}
+
+.btn-light {
+    background-color: transparent;
+    color: var(--blanc-casse);
+    border-color: var(--blanc-casse);
+}
+
+.btn-light:hover {
+    background-color: var(--blanc-casse);
+    color: var(--noir-profond);
+}
+
+/* ─────────────────────────────────────────────────────────
+   PRODUCT CARDS
+   ───────────────────────────────────────────────────────── */
+
+.product-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.product-card-image {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--gris-clair);
+    aspect-ratio: 3/4;
+}
+
+.product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slower) var(--ease-out);
+}
+
+.product-card:hover .product-card-image img {
+    transform: scale(1.05);
+}
+
+.product-card-info {
+    padding: var(--space-4) 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
+}
+
+.product-card:hover .product-card-info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.product-card-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-normal);
+    margin-bottom: var(--space-1);
+}
+
+.product-card-price {
+    font-size: var(--text-sm);
+    color: var(--gris-cendre);
+}
+
+/* ─────────────────────────────────────────────────────────
+   DECORATIVE LINE
+   ───────────────────────────────────────────────────────── */
+
+.line {
+    height: 1px;
+    background-color: var(--gris-clair);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-slower) var(--ease-out);
+}
+
+.line.is-visible {
+    transform: scaleX(1);
+}
+
+.line-dark {
+    background-color: var(--noir-profond);
+}
+
+.line-vertical {
+    width: 1px;
+    height: 60px;
+    background-color: var(--gris-cendre);
+    transform: scaleY(0);
+    transform-origin: top;
+}
+
+.line-vertical.is-visible {
+    transform: scaleY(1);
+}
+
+/* ─────────────────────────────────────────────────────────
+   QUOTE BLOCK
+   ───────────────────────────────────────────────────────── */
+
+.quote {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-style: italic;
+    font-weight: var(--font-light);
+    line-height: var(--leading-snug);
+    max-width: 800px;
+}
+
+.quote-author {
+    margin-top: var(--space-6);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--gris-cendre);
+}
+
+/* ─────────────────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────────────────── */
+
+.footer {
+    background-color: var(--noir-profond);
+    color: var(--blanc-casse);
+    padding: var(--space-24) 0 var(--space-12);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: var(--space-12);
+    margin-bottom: var(--space-16);
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+}
+
+.footer-brand {
+    max-width: 300px;
+}
+
+.footer-brand .logo {
+    margin-bottom: var(--space-4);
+}
+
+.footer-brand p {
+    font-size: var(--text-sm);
+    color: var(--gris-cendre);
+    line-height: var(--leading-relaxed);
+}
+
+.footer-title {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--gris-cendre);
+    margin-bottom: var(--space-4);
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.footer-link {
+    font-size: var(--text-sm);
+    color: var(--blanc-casse);
+    opacity: 0.7;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.footer-link:hover {
+    opacity: 1;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-copyright {
+    font-size: var(--text-xs);
+    color: var(--gris-cendre);
+}
+
+.footer-social {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.footer-social a {
+    font-size: var(--text-sm);
+    opacity: 0.7;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.footer-social a:hover {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────
+   FORM ELEMENTS
+   ───────────────────────────────────────────────────────── */
+
+.form-group {
+    margin-bottom: var(--space-6);
+}
+
+.form-label {
+    display: block;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--gris-cendre);
+    margin-bottom: var(--space-2);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: var(--space-4);
+    font-size: var(--text-base);
+    background-color: transparent;
+    border: 1px solid var(--gris-clair);
+    transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--noir-profond);
+}
+
+.form-textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLL INDICATOR
+   ───────────────────────────────────────────────────────── */
+
+.scroll-indicator {
+    position: absolute;
+    bottom: var(--space-10);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    animation: breathe 3s var(--ease-in-out) infinite;
+}
+
+.scroll-indicator span {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+}
+
+.scroll-indicator-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, currentColor, transparent);
+}
+
+/* ─────────────────────────────────────────────────────────
+   LOADER
+   ───────────────────────────────────────────────────────── */
+
+.page-loader {
+    position: fixed;
+    inset: 0;
+    background-color: var(--blanc-casse);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-max);
+    transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.page-loader.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.page-loader .logo {
+    animation: breathe 2s var(--ease-in-out) infinite;
+}
